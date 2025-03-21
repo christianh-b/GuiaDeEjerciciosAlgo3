@@ -1,0 +1,34 @@
+@startuml
+
+class SistemaFiuba {
+    +inscribirAlumno(nombre: String): Alumno
+    +inscribirAlumnoCarrera(padron: int, codigoCarrera: String)
+    +aprobarMateria(alumno: Alumno, codigoCarrera: String, codigoMateria: String)
+    +consultarEstadoCarrera(padron: int, codigoCarrera: String)
+}
+
+class Alumno {
+    -nombre: String
+    -padron: int
+}
+
+class Carrera {
+    -nombre: String
+    -creditosMinimos: int
+}
+
+class Materia {
+    -codigo: String
+    -nombre: String
+    -creditos: int
+}
+
+SistemaFiuba "1" *-- "*" Carrera: carreras
+SistemaFiuba "1" *-- "*" Alumno: alumnos
+Carrera "1" *-- "*" Materia: materiasObligatorias
+Carrera "1" *-- "*" Materia: materiasOptativas
+Alumno "1" o-- "*" Carrera: carrerasEnCurso
+Alumno "1" o-- "*" Materia: materiasAprobadas
+
+
+@enduml
