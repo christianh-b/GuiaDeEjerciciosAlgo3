@@ -16,10 +16,6 @@ public class Alumno {
         this.carrerasEnCurso = new HashMap<>();
     }
 
-    public String getNombre() {
-        return this.nombre;
-    }
-
     public int getPadron() {
         return this.padron;
     }
@@ -30,5 +26,9 @@ public class Alumno {
 
     public HashMap<String, Carrera> getCarrerasEnCurso() {
         return this.carrerasEnCurso;
+    }
+
+    public Boolean alumnoCursaCarrera(String codigoCarrera){
+        return this.carrerasEnCurso.containsKey(codigoCarrera);
     }
 }

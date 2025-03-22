@@ -14,8 +14,8 @@ public class SistemaFiuba {
 
         Materia materia1 = new Materia("FUNDAMENTOS DE PROGRAMACIÓN", "TB021", 6);
         Materia materia2 = new Materia("ALGORITMOS Y PROGRAMACION I", "95.14", 6);
-        Materia materia3 = new Materia("ALGORITMOS Y ESTRUCTURAS DE DATOS","CB100", 6);
-        Materia materia4 = new Materia("ALGORITMOS Y PROGRAMACION II","95.15", 6);
+        Materia materia3 = new Materia("ALGORITMOS Y ESTRUCTURAS DE DATOS", "CB100", 6);
+        Materia materia4 = new Materia("ALGORITMOS Y PROGRAMACION II", "95.15", 6);
         Materia materia5 = new Materia("PARADIGMAS DE PROGRAMACION", "TB025", 6);
         Materia materia6 = new Materia("ALGORITMOS Y PROGRAMACION III", "95.02", 6);
         Materia materia7 = new Materia("MATEMATICA DISCRETA", "61.07", 6);
@@ -51,16 +51,14 @@ public class SistemaFiuba {
         HashMap<String, Materia> materiasOptativasSistemas = new HashMap<>();
         materiasOptativasSistemas.put(materia15.getCodigo(), materia15);
 
-        Carrera informatica = new Carrera("Ingenieria en Informatica", "INF-2023",52,
+        Carrera informatica = new Carrera("Ingenieria en Informatica", "INF-2023", 52,
                 materiasObligatoriasInformatica,
                 materiasOptativasInformatica);
 
-        Carrera sistemas = new Carrera("Licenciatura en Analisis de Sistemas", "86V14",52,
+        Carrera sistemas = new Carrera("Licenciatura en Analisis de Sistemas", "86V14", 52,
                 materiasObligatoriasSistemas,
                 materiasOptativasSistemas);
 
-        informatica.getCodigoDeCarrera();
-        sistemas.getCodigoDeCarrera();
         this.carreras.put(informatica.getCodigoDeCarrera(), informatica);
         this.carreras.put(sistemas.getCodigoDeCarrera(), sistemas);
     }
@@ -72,65 +70,55 @@ public class SistemaFiuba {
     }
 
     public void inscribirAlumnoCarrera(int padron, String codigoCarrera) {
-        if (!this.alumnos.containsKey(padron)) {
-            System.out.println("ERROR padron invalido");
+        if (!esAlumnoValido(padron) || !esCarreraValida(codigoCarrera)) {
+            System.out.println("ERROR padron y/o codigo de carrera invalido");
             return;
         }
-
-        Alumno alumno = this.alumnos.get(padron);
-
-        if (!this.carreras.containsKey(codigoCarrera)) {
-            System.out.println("ERROR carrera invalida");
-        } else {
-            alumno.getCarrerasEnCurso().put(codigoCarrera, this.carreras.get(codigoCarrera));
-            System.out.println("Alumno inscripto exitosamente a la carrera: " + this.carreras.get(codigoCarrera).getNombre().toUpperCase());
-        }
+        Carrera carrera = this.carreras.get(codigoCarrera);
+        this.alumnos.get(padron).getCarrerasEnCurso().put(codigoCarrera, carrera);
+        System.out.println("Alumno inscripto exitosamente a la carrera: " + carrera.getNombre().toUpperCase());
     }
 
+
     public void aprobarMateria(Alumno alumno, String codigoCarrera, String codigoMateria) {
-
-        if (this.alumnos.containsKey(alumno.getPadron())) {
-
-            if (alumno.getCarrerasEnCurso().containsKey(codigoCarrera)) {
-
-                Materia obligatoria = alumno.getCarrerasEnCurso().get(codigoCarrera).
+        if (esAlumnoValido(alumno.getPadron()) && esCarreraValida(codigoCarrera) && alumno.alumnoCursaCarrera(codigoCarrera)) {
+            Materia obligatoria = alumno.getCarrerasEnCurso().get(codigoCarrera).
                     getMateriasObligatorias().getOrDefault(codigoMateria, null);
-                Materia optativa = alumno.getCarrerasEnCurso().get(codigoCarrera).
-                        getMateriasOptativas().getOrDefault(codigoMateria, null);
+            Materia optativa = alumno.getCarrerasEnCurso().get(codigoCarrera).
+                    getMateriasOptativas().getOrDefault(codigoMateria, null);
 
-                if (obligatoria != null) {
-                    alumno.getMateriasAprobadas().add(obligatoria);
-                } else if (optativa != null) {
-                    alumno.getMateriasAprobadas().add(optativa);
-                } else {
-                    System.out.println("ERROR materia invalida");
-                }
+            if (obligatoria != null) {
+                alumno.getMateriasAprobadas().add(obligatoria);
+            } else if (optativa != null) {
+                alumno.getMateriasAprobadas().add(optativa);
             } else {
-                System.out.println("ERROR codigo de carrera invalido");
+                System.out.println("ERROR materia invalida");
             }
         } else {
-            System.out.println("ERROR padron invalido");
+            System.out.println("ERROR al aprobar materia");
         }
     }
 
     public void consultarEstadoCarrera(int padron, String codigoCarrera) {
-        if (!this.alumnos.containsKey(padron)) {
-            System.out.println("ERROR padron invalido");
+        if (!esAlumnoValido(padron) || !esCarreraValida(codigoCarrera)) {
+            System.out.println("ERROR padron y/o codigo de carrera invalido");
             return;
         }
 
         Alumno alumno = this.alumnos.get(padron);
 
-        if (!alumno.getCarrerasEnCurso().containsKey(codigoCarrera)) {
+        if (!alumno.alumnoCursaCarrera(codigoCarrera)) {
             System.out.println("ERROR el alumno no esta inscripto en esta carrera");
         } else {
             Carrera carrera = alumno.getCarrerasEnCurso().get(codigoCarrera);
-            var credits = creditosPorMateriasAprobadas(alumno);
-            if (carrera.getCreditosMinimos() == creditosPorMateriasAprobadas(alumno)) {
+            int creditosObtenidos = creditosPorMateriasAprobadas(alumno);
+
+            if (creditosObtenidos >= carrera.getCreditosMinimos()) {
                 System.out.println("El alumno se recibio de la carrera: " + carrera.getNombre().toUpperCase());
             } else {
                 System.out.println("El alumno todavia no se recibio");
             }
+            
         }
     }
 
@@ -150,5 +138,13 @@ public class SistemaFiuba {
 
     public HashMap<String, Carrera> getCarreras() {
         return this.carreras;
+    }
+
+    public Boolean esAlumnoValido(int padron) {
+        return this.alumnos.containsKey(padron);
+    }
+
+    public Boolean esCarreraValida(String codigoCarrera) {
+        return this.carreras.containsKey(codigoCarrera);
     }
 }
