@@ -1,0 +1,31 @@
+@startuml
+
+class App {
+    +crearUsuario(nombre: String): Usuario
+    +crearChat(usuarios: List<Usuario>): Chat
+    +enviarMensaje(chatId: int, mensaje: Mensaje): Boolean
+    +getHistorial(chatId: int): List<Mensaje>
+}
+
+class Usuario {
+    -id: int
+    -nombre: String
+}
+
+class Chat {
+    -id: int
+}
+
+class Mensaje {
+    -emisor: Usuario
+    -texto: String
+    -fecha: Date
+}
+
+
+App "1  " *-- "*" Usuario: usuarios
+App "1" o-- "*" Chat: historial
+Chat "1" *-- "*" Mensaje: mensajes
+Chat "1 " *-- "2..*" Usuario: usuarios
+Usuario "1 " o-- "*" Chat: chats
+@enduml
