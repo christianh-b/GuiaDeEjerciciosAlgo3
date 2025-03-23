@@ -25,15 +25,25 @@ public class App {
 
     public Chat crearChat(ArrayList<Usuario> usuarios) {
         Chat chat = new Chat(usuarios, ++this.idChats);
+
+        for (Usuario usuario : usuarios) {
+            usuario.getChats().put(chat.getChatId(), chat);
+        }
+
         this.historialDeChats.put(this.idChats, chat);
         return chat;
     }
 
     public void enviarMensaje(int userId, int chatId, String texto) {
         if (!esUsuarioValido(userId) || !esChatValido(chatId)) {
-        } else {
-            Chat chat = this.historialDeChats.get(chatId);
-            Mensaje mensaje = new Mensaje(this.usuarios.get(userId), new Date(), texto);
+            return;
+        }
+
+        Usuario usuario = this.usuarios.get(userId);
+        Chat chat = this.historialDeChats.get(chatId);
+
+        if (usuario.esMiembroDelChat(chatId)) {
+            Mensaje mensaje = new Mensaje(usuario, new Date(), texto);
             chat.getMensajes().add(mensaje);
         }
     }

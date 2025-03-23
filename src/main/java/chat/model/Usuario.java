@@ -24,4 +24,8 @@ public class Usuario {
     public HashMap<Integer, Chat> getChats() {
         return this.chats;
     }
+
+    public Boolean esMiembroDelChat(int chatId){
+        return this.chats.containsKey(chatId);
+    }
 }
