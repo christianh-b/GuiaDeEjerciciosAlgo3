@@ -1,0 +1,31 @@
+@startuml
+
+class SistemaDeMensajeria {
+    +crearUsuario(nombre: String, contrasenia: String, esPersonal: Boolean): Usuario
+    +iniciarSesion(id: int, contrasenia: String)
+    +cerrarSesion(usuario: Usuario)
+    +verMensajesEnviados()
+    +verMensajesRecibidos()
+    +enviarMensaje(emisor: Usuario, receptor: Usuario, mensaje: String)
+}
+
+class Usuario {
+    -nombre: String
+    -contrasenia: String
+    -id: int
+    -esPersonal: Boolean
+    -sesionActiva: Boolean
+}
+
+class Mensaje {
+    -emisor: Usuario
+    -receptor: Usuario
+    -Fecha: Date
+    -contenido: String
+}
+
+SistemaDeMensajeria "1" *-- "*" Usuario: usuarios
+Usuario "1" o-- "*" Mensaje: mensajesEnviados
+Usuario "1" o-- "*" Mensaje: mensajesRecibidos
+
+@enduml
